@@ -1,0 +1,65 @@
+2Stage Classifier 결과 정리 (0.1272점)
+
+실행 파일: classifier_approach.py
+제출 파일: submission_2stage_classifier.csv
+점수: 0.1272 (실패)
+
+문제점 분석:
+
+1. Classifier 학습 실패
+   - Positive 라벨: 1,668개 (correlation > 0.35)
+   - Negative 라벨: 5,004개 (3배 샘플링)
+   - 결과: 대부분 확률이 0.0001~0.0005로 매우 낮음
+   - 원인: Correlation 0.35 기준이 너무 높아서 Positive가 너무 적음
+
+2. 쌍 선택 문제
+   - Tau threshold 0.30~0.50 모두 1,670개 동일
+   - 상위 3,000개 선택 시 최소 확률 0.0004 (거의 무작위)
+   - 결과: 실제 공행성 쌍이 아닌 무작위 쌍 선택됨
+   - F1 Score 붕괴 → 0.1272
+
+3. Value Regressor 타겟 문제
+   - 학습 타겟: 최근 월의 두 품목 평균값
+   - 문제: 실제 공행성 값이 아님
+   - 결과: 값 예측도 부정확
+
+4. 데이터 문제
+   - 전체 데이터: 12개월만 존재 (2022-01 ~ 2025-07이 아니라 실제로는 12개월)
+   - Lag 분석에 충분하지 않은 데이터
+   - 시계열 특성 추출 어려움
+
+실제 수행 내용:
+
+Stage 1 - Pair Classifier
+  - 후보 쌍: 9,900개 (100x99)
+  - 특성: 11개 (correlation lag 0-3, 통계)
+  - Positive 라벨링: correlation > 0.35 → 1,668개
+  - Negative sampling: 5,004개 (Positive의 3배)
+  - XGBClassifier 학습
+  - 결과: 확률 분포가 너무 낮음 (median 0.0001)
+
+Stage 2 - Value Regressor
+  - 상위 3,000개 쌍 선택 (확률 기준)
+  - 특성: 13개 (pair features + recent values)
+  - 타겟: 최근 월 평균값
+  - XGBRegressor 학습
+  - 결과: 평균 1,739,442 (스케일링 적용)
+
+제출 결과:
+  - 쌍 개수: 3,000개
+  - 평균값: 1,739,442 (실제 데이터 평균과 동일)
+  - 0개 값: 15개 (0.5%)
+  - 점수: 0.1272
+
+왜 실패했나:
+  - Classifier가 쌍을 제대로 선택하지 못함
+  - 거의 무작위 선택 → F1 Score 0에 가까움
+  - Score = 0.6 × F1 + 0.4 × (1-NMAE)
+  - F1 ≈ 0 이면 Score ≈ 0.4 × (1-NMAE)
+  - 0.1272 → NMAE ≈ 0.68 (매우 나쁨)
+
+결론:
+  - 2-Stage ML 접근은 이 문제에 부적합
+  - 데이터가 너무 적음 (12개월)
+  - Correlation 기반 단순 접근이 더 효과적
+  - submission_v3_final.csv로 재제출 필요
