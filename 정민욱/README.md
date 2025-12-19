@@ -99,10 +99,10 @@
 [3rd-try](3rd_try.ipynb): hybrid(linear+xgboost)
 
 ### 5.4. 네 번째 방법론 (score = 0.154) ❌
-[4th-try]: ridge 
+ridge 
 
 ### 5.5. 다섯 번째 방법론 (score = 0.201) ❌
-[5th-try](5th_try.ipynb): ensemble
+ensemble
 ---
 
 ## 결과
@@ -173,4 +173,4 @@
 | **2** | **Optimization** | 이중 for문을 `corr()` 행렬 연산으로 대체 | ⭐⭐ |
 | **3** | **Feature** | `Granger Causality`, `Sin/Cos Time encoding` 추가 | ⭐⭐⭐ |
 | **4** | **Model** | Loss Function을 `MAE` 또는 `Custom WMAPE`로 변경 | ⭐⭐⭐ |
-| **5** | **Ensemble** | LightGBM 모델 추가하여 앙상블 적용 | ⭐⭐ |
+| **5** | **Ensemble** | LightGBM 모델 추가하여 앙상블 적용 | ⭐⭐ |    
